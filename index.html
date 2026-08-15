@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BarberFlow — Gestão completa para sua barbearia</title>
+<meta name="description" content="BarberFlow: agenda, agendamento público, clientes, financeiro e lembretes para barbearias. Tudo num só lugar, direto do celular." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --primary: #0095FF;
+    --primary-shadow: #0872C2;
+    --primary-soft: #E6F4FF;
+    --bg: #FFFFFF;
+    --surface: #F7FAFD;
+    --border: #D9E6F2;
+    --fg: #0E1A2A;
+    --muted: #5C7184;
+    --success: #1FC55E;
+    --success-shadow: #158C43;
+    --amber: #FFB020;
+    --amber-shadow: #D18A00;
+    --red: #E5484D;
+    --red-shadow: #B02126;
+    --radius: 16px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Nunito', system-ui, sans-serif; background: var(--bg); color: var(--fg); font-weight: 600; overflow-x: hidden; }
+  a { color: inherit; text-decoration: none; }
+  /* ===== botões chunky 3D ===== */
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px; font-family: inherit;
+    font-weight: 800; font-size: 17px; padding: 14px 28px; border-radius: 16px;
+    border: 2px solid transparent; cursor: pointer; transition: transform .08s ease, box-shadow .08s ease, filter .15s ease;
+    user-select: none; white-space: nowrap;
+  }
+  .btn-primary { background: var(--primary); color: #fff; box-shadow: 0 4px 0 var(--primary-shadow); }
+  .btn-primary:active { transform: translateY(4px); box-shadow: 0 0 0 var(--primary-shadow); }
+  .btn-primary:hover { filter: brightness(1.07); }
+  .btn-success { background: var(--success); color: #06210F; box-shadow: 0 4px 0 var(--success-shadow); }
+  .btn-success:active { transform: translateY(4px); box-shadow: 0 0 0 var(--success-shadow); }
+  .btn-success:hover { filter: brightness(1.07); }
+  .btn-amber { background: var(--amber); color: #3a2800; box-shadow: 0 4px 0 var(--amber-shadow); }
+  .btn-amber:active { transform: translateY(4px); box-shadow: 0 0 0 var(--amber-shadow); }
+  .btn-amber:hover { filter: brightness(1.05); }
+  .btn-outline { background: #fff; color: var(--primary); border-color: var(--primary); box-shadow: 0 4px 0 var(--primary-soft); }
+  .btn-outline:active { transform: translateY(4px); box-shadow: 0 0 0 var(--primary-soft); }
+  .btn-outline:hover { background: var(--primary-soft); }
+  .btn-white { background: #fff; color: var(--primary); box-shadow: 0 4px 0 rgba(0,0,0,.18); }
+  .btn-white:active { transform: translateY(4px); box-shadow: 0 0 0 rgba(0,0,0,.18); }
+  .btn-white:hover { filter: brightness(.98); }
+  .btn-sm { padding: 9px 18px; font-size: 14px; border-radius: 12px; }
+  .container { max-width: 1150px; margin: 0 auto; padding: 0 24px; }
+  /* ===== nav ===== */
+  nav { position: sticky; top: 0; z-index: 50; background: rgba(255,255,255,.9); backdrop-filter: blur(14px); border-bottom: 1px solid var(--border); }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 68px; }
+  .logo { display: flex; align-items: center; gap: 10px; font-weight: 900; font-size: 20px; }
+  .logo .mark { width: 32px; height: 32px; }
+  .nav-links { display: flex; gap: 26px; font-weight: 700; color: var(--muted); font-size: 15px; }
+  .nav-links a:hover { color: var(--primary); }
+  .nav-cta { display: flex; gap: 12px; }
+  /* ===== hero ===== */
+  .hero { position: relative; padding: 80px 0 64px; background: linear-gradient(180deg, #F0F8FF 0%, #FFFFFF 100%); overflow: hidden; }
+  .hero::before { content:''; position: absolute; inset: -20%; background: radial-gradient(700px 400px at 15% 20%, rgba(0,149,255,.13), transparent 60%), radial-gradient(600px 400px at 90% 30%, rgba(255,176,32,.10), transparent 60%); pointer-events: none; }
+  .hero-grid { position: relative; display: grid; grid-template-columns: 1.05fr .95fr; gap: 48px; align-items: center; }
+  .eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--primary); background: var(--primary-soft); border: 1px solid rgba(0,149,255,.3); padding: 7px 14px; border-radius: 999px; margin-bottom: 20px; }
+  .hero h1 { font-size: clamp(36px, 4.8vw, 56px); line-height: 1.08; font-weight: 900; letter-spacing: -0.01em; }
+  .hero h1 .accent { color: var(--primary); position: relative; }
+  .hero h1 .accent::after { content:''; position: absolute; left: 0; right: 0; bottom: 4px; height: 10px; background: rgba(0,149,255,.25); border-radius: 4px; z-index: -1; }
+  .hero p.lead { margin-top: 20px; font-size: 18px; color: var(--muted); line-height: 1.6; max-width: 470px; }
+  .hero-ctas { margin-top: 32px; display: flex; gap: 14px; flex-wrap: wrap; }
+  .hero-proof { margin-top: 28px; display: flex; align-items: center; gap: 16px; color: var(--muted); font-size: 14px; }
+  .hero-proof .avatars { display: flex; }
+  .hero-proof .avatars span { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-size: 13px; font-weight: 900; color: #fff; border: 3px solid #fff; margin-left: -8px; }
+  .hero-proof .avatars span:first-child { margin-left: 0; }
+  .hero-proof .stars { color: var(--amber); letter-spacing: 2px; font-size: 15px; }
+  /* ===== app mockup interativo (agenda do dia) ===== */
+  .phone {
+    position: relative; width: 300px; margin: 0 auto; background: #0E1A2A;
+    border-radius: 38px; padding: 14px; border: 6px solid #0A1420;
+    box-shadow: 0 30px 80px rgba(14,26,42,.35); transform: rotate(3deg); transition: transform .3s ease;
+  }
+  .phone:hover { transform: rotate(0deg) scale(1.02); }
+  .phone-screen { background: var(--surface); border-radius: 28px; overflow: hidden; }
+  .phone-header { background: var(--primary); color: #fff; padding: 18px 18px 14px; display: flex; justify-content: space-between; align-items: center; }
+  .phone-header .date { font-size: 13px; font-weight: 800; opacity: .9; }
+  .phone-header .day { font-size: 18px; font-weight: 900; }
+  .phone-body { padding: 14px; display: grid; gap: 10px; }
+  .appt { background: #fff; border: 2px solid var(--border); border-radius: 14px; padding: 12px 14px; display: flex; align-items: center; gap: 12px; animation: apptIn .5s ease both; }
+  .appt:nth-child(2) { animation-delay: .15s; }
+  .appt:nth-child(3) { animation-delay: .3s; }
+  @keyframes apptIn { from { opacity: 0; transform: translateX(-16px); } to { opacity: 1; transform: none; } }
+  .appt .time { font-size: 14px; font-weight: 900; color: var(--primary); background: var(--primary-soft); padding: 4px 8px; border-radius: 8px; }
+  .appt .info { flex: 1; }
+  .appt .name { font-weight: 800; font-size: 14px; }
+  .appt .serv { font-size: 12px; color: var(--muted); font-weight: 700; }
+  .appt .status { width: 10px; height: 10px; border-radius: 50%; }
+  .appt .status.done { background: var(--success); }
+  .appt .status.next { background: var(--amber); box-shadow: 0 0 0 4px rgba(255,176,32,.2); }
+  .appt .status.wait { background: var(--red); }
+  .phone-add { background: var(--primary); color: #fff; font-weight: 800; font-size: 14px; padding: 12px; border-radius: 14px; text-align: center; box-shadow: 0 4px 0 var(--primary-shadow); margin: 0 14px 14px; }
+  .phone-add:active { transform: translateY(4px); box-shadow: 0 0 0 var(--primary-shadow); }
+  /* ===== marquee ===== */
+  .marquee { background: var(--fg); color: #fff; padding: 16px 0; overflow: hidden; white-space: nowrap; }
+  .marquee span { display: inline-block; padding-right: 50px; font-weight: 800; font-size: 15px; letter-spacing: .02em; animation: marquee 22s linear infinite; }
+  .marquee span em { color: var(--amber); font-style: normal; }
+  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  /* ===== seções ===== */
+  section { padding: 76px 0; }
+  .section-head { text-align: center; max-width: 620px; margin: 0 auto 48px; }
+  .section-head h2 { font-size: 34px; font-weight: 900; line-height: 1.15; }
+  .section-head h2 .accent { color: var(--primary); }
+  .section-head p { margin-top: 12px; color: var(--muted); font-size: 17px; line-height: 1.6; }
+  /* ===== features (bento assimétrico) ===== */
+  .bento { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; }
+  .b-item { background: var(--surface); border: 2px solid var(--border); border-radius: 22px; padding: 26px; transition: transform .2s ease, border-color .2s ease; position: relative; }
+  .b-item:hover { transform: translateY(-5px); border-color: var(--primary); }
+  .b-item:nth-child(1) { grid-column: span 7; }
+  .b-item:nth-child(2) { grid-column: span 5; }
+  .b-item:nth-child(3) { grid-column: span 5; }
+  .b-item:nth-child(4) { grid-column: span 7; }
+  .b-item:nth-child(5) { grid-column: span 12; }
+  .b-icon { width: 50px; height: 50px; border-radius: 14px; display: grid; place-items: center; background: var(--primary-soft); color: var(--primary); margin-bottom: 16px; }
+  .b-icon svg { width: 26px; height: 26px; }
+  .b-item h3 { font-size: 18px; font-weight: 800; margin-bottom: 8px; }
+  .b-item p { color: var(--muted); font-size: 15px; line-height: 1.55; }
+  /* ===== o dia na barbearia (timeline) ===== */
+  .day-schedule { max-width: 760px; margin: 0 auto; position: relative; }
+  .day-schedule::before { content:''; position: absolute; left: 27px; top: 8px; bottom: 8px; width: 3px; background: var(--border); border-radius: 3px; }
+  .d-item { display: flex; gap: 22px; margin-bottom: 26px; position: relative; }
+  .d-time { width: 56px; height: 56px; border-radius: 16px; background: var(--primary); color: #fff; display: grid; place-items: center; font-weight: 900; font-size: 14px; box-shadow: 0 4px 0 var(--primary-shadow); flex-shrink: 0; z-index: 1; }
+  .d-item:nth-child(even) .d-time { background: var(--amber); box-shadow: 0 4px 0 var(--amber-shadow); }
+  .d-card { background: var(--surface); border: 2px solid var(--border); border-radius: 16px; padding: 18px 20px; flex: 1; transition: transform .2s ease, border-color .2s ease; }
+  .d-card:hover { transform: translateX(5px); border-color: var(--primary); }
+  .d-card h4 { font-weight: 800; font-size: 16px; }
+  .d-card p { color: var(--muted); font-size: 14px; margin-top: 4px; line-height: 1.5; }
+  /* ===== depoimentos marquee 2 ===== */
+  .testimonials { background: var(--surface); border-block: 2px solid var(--border); }
+  .t-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .t-card { background: #fff; border: 2px solid var(--border); border-radius: 20px; padding: 24px; transition: transform .2s ease; }
+  .t-card:hover { transform: translateY(-4px); }
+  .t-card .stars { color: var(--amber); letter-spacing: 2px; font-size: 15px; }
+  .t-card p { margin: 12px 0 16px; font-size: 15px; line-height: 1.6; color: var(--fg); }
+  .t-card .who { display: flex; align-items: center; gap: 12px; }
+  .t-card .who .av { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-weight: 900; font-size: 14px; }
+  .t-card .who .nm { font-weight: 800; font-size: 14px; }
+  .t-card .who .bs { font-size: 12px; color: var(--muted); }
+  /* ===== pricing com slider ===== */
+  .pricing-wrap { max-width: 960px; margin: 0 auto; }
+  .calc { background: var(--fg); border-radius: 24px; padding: 34px; color: #fff; margin-bottom: 26px; }
+  .calc h3 { font-size: 20px; font-weight: 900; }
+  .calc p { color: rgba(255,255,255,.7); font-size: 14px; margin-top: 4px; }
+  .slider-row { margin: 26px 0 10px; }
+  .slider-row label { font-size: 14px; font-weight: 800; color: rgba(255,255,255,.85); display: flex; justify-content: space-between; align-items: center; }
+  .slider-row output { font-size: 22px; font-weight: 900; color: var(--amber); }
+  input[type=range] { width: 100%; margin-top: 14px; -webkit-appearance: none; appearance: none; height: 10px; border-radius: 999px; background: rgba(255,255,255,.2); outline: none; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 30px; height: 30px; border-radius: 50%; background: var(--amber); border: 4px solid #fff; box-shadow: 0 4px 0 rgba(0,0,0,.3); cursor: pointer; }
+  input[type=range]::-moz-range-thumb { width: 26px; height: 26px; border-radius: 50%; background: var(--amber); border: 4px solid #fff; box-shadow: 0 4px 0 rgba(0,0,0,.3); cursor: pointer; }
+  .calc-result { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,.08); border-radius: 16px; padding: 20px 24px; margin-top: 20px; }
+  .calc-result .per { font-size: 14px; color: rgba(255,255,255,.7); font-weight: 700; }
+  .calc-result .val { font-size: 34px; font-weight: 900; color: #fff; }
+  .calc-result .val small { font-size: 15px; color: var(--amber); font-weight: 800; }
+  .plan-single { background: #fff; border: 2px solid var(--border); border-radius: 22px; padding: 30px; display: flex; gap: 26px; align-items: center; flex-wrap: wrap; }
+  .plan-single .left { flex: 1; min-width: 240px; }
+  .plan-single .left h3 { font-size: 20px; font-weight: 900; }
+  .plan-single .left p { color: var(--muted); font-size: 15px; margin-top: 6px; line-height: 1.5; }
+  .plan-single .right { display: grid; gap: 10px; justify-items: end; }
+  .plan-single .right .price { font-size: 40px; font-weight: 900; line-height: 1; }
+  .plan-single .right .price small { font-size: 14px; color: var(--muted); font-weight: 700; }
+  /* ===== FAQ ===== */
+  .faq { max-width: 720px; margin: 0 auto; display: grid; gap: 12px; }
+  .faq-item { background: var(--surface); border: 2px solid var(--border); border-radius: 14px; overflow: hidden; }
+  .faq-q { width: 100%; text-align: left; background: none; border: none; color: var(--fg); font-family: inherit; font-size: 16px; font-weight: 800; padding: 18px 22px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .faq-q .chev { transition: transform .25s ease; color: var(--muted); flex-shrink: 0; }
+  .faq-item.open .faq-q .chev { transform: rotate(180deg); color: var(--primary); }
+  .faq-a { max-height: 0; overflow: hidden; transition: max-height .3s ease; }
+  .faq-a p { padding: 0 22px 18px; color: var(--muted); font-size: 15px; line-height: 1.6; }
+  /* ===== CTA final (faixa de barbeiro) ===== */
+  .final-cta { position: relative; text-align: center; padding: 84px 0; color: #fff; overflow: hidden; }
+  .final-cta::before { content:''; position: absolute; inset: 0; background: linear-gradient(135deg, #0E1A2A, #123a5e 55%, #0095FF); }
+  .final-cta .stripes { position: absolute; inset: 0; opacity: .12; background: repeating-linear-gradient(45deg, #fff 0 18px, transparent 18px 36px); }
+  .final-cta .inner { position: relative; }
+  .final-cta h2 { font-size: clamp(30px, 4vw, 44px); font-weight: 900; line-height: 1.1; }
+  .final-cta p { color: rgba(255,255,255,.8); font-size: 17px; margin: 14px auto 30px; max-width: 440px; line-height: 1.6; }
+  /* ===== footer ===== */
+  footer { border-top: 1px solid var(--border); padding: 30px 0 40px; color: var(--muted); font-size: 14px; background: var(--surface); }
+  .footer-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+  .footer-links { display: flex; gap: 22px; }
+  .footer-links a:hover { color: var(--primary); }
+  /* ===== reveal ===== */
+  .reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s ease, transform .7s ease; }
+  .reveal.visible { opacity: 1; transform: none; }
+  /* ===== premium: partículas, cursor, tilt, magnetic, progress ===== */
+  #particles { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+  .cursor-dot, .cursor-ring { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9999; border-radius: 50%; transform: translate(-50%, -50%); }
+  .cursor-dot { width: 8px; height: 8px; background: var(--primary); }
+  .cursor-ring { width: 38px; height: 38px; border: 2px solid rgba(0,149,255,.5); transition: width .25s ease, height .25s ease, border-color .25s ease; }
+  .cursor-ring.hovering { width: 56px; height: 56px; border-color: rgba(31,197,94,.8); }
+  @media (pointer: coarse) { .cursor-dot, .cursor-ring { display: none; } }
+  .tilt { transform-style: preserve-3d; transition: transform .18s ease-out; will-change: transform; }
+  .tilt-inner { transform: translateZ(30px); }
+  .scroll-progress { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, var(--primary), var(--amber)); z-index: 100; width: 0; }
+  @media (pointer: fine) { .magnetic { transition: transform .25s ease; } }
+  .count-num { font-variant-numeric: tabular-nums; }
+  .grad-text { background: linear-gradient(100deg, var(--fg) 20%, var(--primary) 50%, var(--amber) 75%, var(--fg) 95%); background-size: 220% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: gradFlow 7s ease infinite; }
+  @keyframes gradFlow { 0%,100% { background-position: 0% 0; } 50% { background-position: 100% 0; } }
+  .glow-ring { position: relative; }
+  .glow-ring::after { content:''; position: absolute; inset: -2px; border-radius: inherit; background: conic-gradient(from 0deg, var(--primary), var(--amber), var(--success), var(--primary)); opacity: 0; transition: opacity .4s ease; z-index: -1; filter: blur(14px); }
+  .glow-ring:hover::after { opacity: .6; }
+  /* ===== resp ===== */
+  @media (max-width: 960px) {
+    .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+    .phone { transform: none; }
+    .bento { grid-template-columns: 1fr 1fr; }
+    .b-item:nth-child(n) { grid-column: span 1; }
+    .b-item:nth-child(1), .b-item:nth-child(4), .b-item:nth-child(5) { grid-column: span 2; }
+    .t-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 640px) {
+    .nav-links { display: none; }
+    .bento { grid-template-columns: 1fr; }
+    .b-item:nth-child(n) { grid-column: span 1; }
+    .t-grid { grid-template-columns: 1fr; }
+    .section-head h2 { font-size: 27px; }
+    .calc { padding: 24px; }
+    .plan-single { flex-direction: column; align-items: flex-start; }
+    .plan-single .right { justify-items: start; }
+    .footer-inner { flex-direction: column; text-align: center; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } .reveal { opacity: 1; transform: none; } }
+</style>
+</head>
+<body>
+
+<div class="scroll-progress" id="scrollProgress"></div>
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- ===== NAV ===== -->
+<nav>
+  <div class="container nav-inner">
+    <a href="#" class="logo">
+      <svg class="mark" viewBox="0 0 32 32" fill="none">
+        <rect x="1" y="1" width="30" height="30" rx="9" fill="#0095FF"/>
+        <path d="M7 24C7 16 10 9 16 9C22 9 25 16 25 24H21C21 18.5 18.7 13.5 16 13.5C13.3 13.5 11 18.5 11 24H7Z" fill="#fff"/>
+        <circle cx="16" cy="7" r="2" fill="#FFB020"/>
+      </svg>
+      BarberFlow
+    </a>
+    <div class="nav-links">
+      <a href="#recursos">Recursos</a>
+      <a href="#dia">O dia na barbearia</a>
+      <a href="#depoimentos">Depoimentos</a>
+      <a href="#precos">Preços</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <div class="nav-cta">
+      <a href="#precos" class="btn btn-outline btn-sm">Entrar</a>
+      <a href="#precos" class="btn btn-primary btn-sm">Começar grátis</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<header class="hero">
+  <canvas id="particles"></canvas>
+  <div class="container hero-grid">
+    <div>
+      <span class="eyebrow">✂️ Gestão completa para barbearias</span>
+      <h1>Sua barbearia organizada, <span class="accent grad-text">do corte à cobrança</span>.</h1>
+      <p class="lead">Agenda, agendamento público, clientes, financeiro e lembretes automáticos — tudo num app simples, feito pro dono de barbearia que não tem tempo a perder.</p>
+      <div class="hero-ctas">
+        <a href="#precos" class="btn btn-primary magnetic glow-ring">🚀 Começar grátis</a>
+        <a href="#recursos" class="btn btn-outline magnetic">Ver recursos</a>
+      </div>
+      <div class="hero-proof">
+        <div class="avatars"><span style="background:#0095FF">J</span><span style="background:#FFB020">M</span><span style="background:#1FC55E">R</span><span style="background:#E5484D">T</span></div>
+        <div><div class="stars">★★★★★</div><span>+350 barbearias usando todo dia</span></div>
+      </div>
+    </div>
+    <div>
+      <div class="phone tilt">
+        <div class="phone-screen tilt-inner">
+          <div class="phone-header">
+            <div>
+              <div class="date">SEXTA, 15 AGO</div>
+              <div class="day">Hoje na barbearia</div>
+            </div>
+            <div style="background:rgba(255,255,255,.2); border-radius:10px; padding:6px 10px; font-weight:800; font-size:13px;">8 agend.</div>
+          </div>
+          <div class="phone-body">
+            <div class="appt"><span class="time">09:00</span><div class="info"><div class="name">Carlos Souza</div><div class="serv">Corte + Barba</div></div><span class="status done"></span></div>
+            <div class="appt"><span class="time">10:30</span><div class="info"><div class="name">Marina Lopes</div><div class="serv">Coloração</div></div><span class="status next"></span></div>
+            <div class="appt"><span class="time">11:15</span><div class="info"><div class="name">Pedro Almeida</div><div class="serv">Corte na máquina</div></div><span class="status wait"></span></div>
+          </div>
+          <div class="phone-add">+ Novo agendamento</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ===== MARQUEE ===== -->
+<div class="marquee">
+  <span><em>✂️ AGENDA</em> &nbsp;·&nbsp; <em>📅 AGENDAMENTO PÚBLICO</em> &nbsp;·&nbsp; <em>👥 CLIENTES &amp; FIDELIDADE</em> &nbsp;·&nbsp; <em>💰 FINANCEIRO</em> &nbsp;·&nbsp; <em>🔔 LEMBRETES AUTOMÁTICOS</em> &nbsp;·&nbsp; <em>📱 PWA INSTALÁVEL</em> &nbsp;·&nbsp; <em>✂️ AGENDA</em> &nbsp;·&nbsp; <em>📅 AGENDAMENTO PÚBLICO</em> &nbsp;·&nbsp; <em>👥 CLIENTES &amp; FIDELIDADE</em> &nbsp;·&nbsp; <em>💰 FINANCEIRO</em> &nbsp;·&nbsp; <em>🔔 LEMBRETES AUTOMÁTICOS</em> &nbsp;·&nbsp; <em>📱 PWA INSTALÁVEL</em></span>
+</div>
+
+<!-- ===== RECURSOS (BENTO) ===== -->
+<section id="recursos">
+  <div class="container">
+    <div class="section-head reveal">
+      <h2>Tudo o que a barbearia precisa, <span class="accent">num só app</span></h2>
+      <p>Chega de caderno, planilha e WhatsApp perdido. O BarberFlow cuida do operacional — você cuida do corte.</p>
+    </div>
+    <div class="bento">
+      <div class="b-item reveal">
+        <div class="b-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+        <h3>Agenda inteligente</h3>
+        <p>Veja o dia inteiro de um jeito que cabe no bolso: horários, serviços e status de cada atendimento. Arraste, remaneje, conclua — tudo com toque, do celular.</p>
+      </div>
+      <div class="b-item reveal">
+        <div class="b-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18"/></svg></div>
+        <h3>Agendamento público</h3>
+        <p>Seu cliente marca sozinho pelo link da barbearia, 24h por dia. Menos ligação, menos "deixa eu ver a agenda", mais cadeira ocupada.</p>
+      </div>
+      <div class="b-item reveal">
+        <div class="b-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+        <h3>Clientes &amp; fidelidade</h3>
+        <p>Histórico de cada cliente, ranking de fidelidade e lembretes na hora certa. O cliente que volta é o que mais vale — o BarberFlow ajuda a trazê-lo de volta.</p>
+      </div>
+      <div class="b-item reveal">
+        <div class="b-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+        <h3>Financeiro em dia</h3>
+        <p>Relatórios claros de faturamento, serviços mais vendidos e comissões. Saiba exatamente quanto entrou — sem calculadora e sem susto no fim do mês.</p>
+      </div>
+      <div class="b-item reveal">
+        <div class="b-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+        <h3>Lembretes automáticos</h3>
+        <p>Notificação push e WhatsApp pro barbeiro quando um cliente marca, e lembrete pro cliente na véspera. Menos "falta", mais faturamento.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== O DIA NA BARBEARIA ===== -->
+<section id="dia" style="background:var(--surface); border-block:2px solid var(--border);">
+  <div class="container">
+    <div class="section-head reveal">
+      <h2>Um dia com o <span class="accent">BarberFlow</span></h2>
+      <p>Do primeiro café ao último corte — a rotina que já roda em centenas de barbearias.</p>
+    </div>
+    <div class="day-schedule">
+      <div class="d-item reveal">
+        <div class="d-time">08:00</div>
+        <div class="d-card"><h4>Abre a barbearia</h4><p>O dia já está montado: o BarberFlow mostra quem vem, a que horas e com qual serviço.</p></div>
+      </div>
+      <div class="d-item reveal">
+        <div class="d-time">09:00</div>
+        <div class="d-card"><h4>Primeiro cliente</h4><p>Cliente marcou sozinho pelo link público ontem à noite. Chegou na hora — sem telefonema.</p></div>
+      </div>
+      <div class="d-item reveal">
+        <div class="d-time">11:30</div>
+        <div class="d-card"><h4>Lembrete disparado</h4><p>Cliente da tarde recebeu o lembrete automático. Ninguém esqueceu, ninguém faltou.</p></div>
+      </div>
+      <div class="d-item reveal">
+        <div class="d-time">18:00</div>
+        <div class="d-card"><h4>Fim do dia</h4><p>Relatório do dia pronto: serviços, faturamento, ranking de fidelidade. Fecha a maquininha e vai pra casa.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== DEPOIMENTOS ===== -->
+<section id="depoimentos" class="testimonials">
+  <div class="container">
+    <div class="section-head reveal">
+      <h2>Quem usa, <span class="accent">recomenda</span></h2>
+    </div>
+    <div class="t-grid">
+      <div class="t-card reveal">
+        <div class="stars">★★★★★</div>
+        <p>"Antes eu perdia agendamento no caderno e no WhatsApp. Agora o cliente marca sozinho e eu só abro o app de manhã. Mudou meu dia."</p>
+        <div class="who"><span class="av" style="background:#0095FF">R</span><div><div class="nm">Rafael Mendes</div><div class="bs">Barbearia do Rafa · SP</div></div></div>
+      </div>
+      <div class="t-card reveal">
+        <div class="stars">★★★★★</div>
+        <p>"O lembrete automático cortou minhas faltas pela metade. E o ranking de fidelidade fez o cliente voltar mais vezes. Vale cada centavo."</p>
+        <div class="who"><span class="av" style="background:#FFB020">J</span><div><div class="nm">Juliana Castro</div><div class="bs">Studio JC · RJ</div></div></div>
+      </div>
+      <div class="t-card reveal">
+        <div class="stars">★★★★★</div>
+        <p>"Uso no celular o dia inteiro. É simples de verdade — minha esposa aprendeu em 5 minutos. O financeiro no fim do mês é um alívio."</p>
+        <div class="who"><span class="av" style="background:#1FC55E">T</span><div><div class="nm">Thiago Nunes</div><div class="bs">Nunes Barber · MG</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PREÇOS ===== -->
+<section id="precos">
+  <div class="container pricing-wrap">
+    <div class="section-head reveal">
+      <h2>Preço justo, <span class="accent">por cadeira</span></h2>
+      <p>Monte o valor do jeito que faz sentido pra sua barbearia.</p>
+    </div>
+    <div class="calc reveal">
+      <h3>Calculadora de plano</h3>
+      <p>Quantos barbeiros usam o BarberFlow na sua barbearia?</p>
+      <div class="slider-row">
+        <label>Barbeiros <output id="countOut">3</output></label>
+        <input type="range" id="barbers" min="1" max="12" value="3" />
+      </div>
+      <div class="calc-result">
+        <span class="per">por barbeiro, por mês</span>
+        <span class="val">R$ <span id="totalOut">29,70</span><small>/mês</small></span>
+      </div>
+    </div>
+    <div class="plan-single reveal">
+      <div class="left">
+        <h3>Plano Barbearia</h3>
+        <p>Tudo incluso: agenda, agendamento público, clientes &amp; fidelidade, financeiro, lembretes WhatsApp/push, PWA instalável e suporte. Sem taxa de setup, sem fidelidade — cancele quando quiser.</p>
+      </div>
+      <div class="right">
+        <div class="price">R$ 9,90<small>/mês por barbeiro</small></div>
+        <a href="#" class="btn btn-primary">Começar 14 dias grátis</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FAQ ===== -->
+<section id="faq" style="background:var(--surface); border-block:2px solid var(--border);">
+  <div class="container">
+    <div class="section-head reveal">
+      <h2>Perguntas <span class="accent">frequentes</span></h2>
+    </div>
+    <div class="faq">
+      <div class="faq-item reveal">
+        <button class="faq-q">Preciso de computador? <svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
+        <div class="faq-a"><p>Não. O BarberFlow é um PWA: instala no celular como app, funciona offline e não ocupa quase nada. O computador é opcional.</p></div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q">Como o cliente agenda sozinho? <svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
+        <div class="faq-a"><p>Você compartilha o link da sua barbearia (ex.: bbrflow.vercel.app/seudominio). O cliente escolhe serviço, horário e dados — e cai direto na sua agenda.</p></div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q">E os lembretes? <svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
+        <div class="faq-a"><p>Notificação push no seu celular quando alguém agenda, e lembrete automático pro cliente na véspera do horário. Você pode ligar/desligar por tipo.</p></div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q">Como pago? <svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
+        <div class="faq-a"><p>Assinatura mensal via Asaas (cartão ou Pix), sem fidelidade. Primeiros 14 dias grátis pra testar de verdade.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CTA FINAL ===== -->
+<section class="final-cta">
+  <div class="stripes"></div>
+  <div class="container inner">
+    <h2>Sua barbearia merece uma agenda<br/>que trabalha por você.</h2>
+    <p>Comece grátis por 14 dias. Sem cartão, sem compromisso — só uma agenda que se paga sozinha.</p>
+    <a href="#" class="btn btn-white" style="font-size:19px; padding:16px 42px;">✂️ Começar grátis</a>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="container footer-inner">
+    <div class="logo" style="font-size:16px;">
+      <svg class="mark" style="width:22px;height:22px;" viewBox="0 0 32 32" fill="none"><rect x="1" y="1" width="30" height="30" rx="9" fill="#0095FF"/><path d="M7 24C7 16 10 9 16 9C22 9 25 16 25 24H21C21 18.5 18.7 13.5 16 13.5C13.3 13.5 11 18.5 11 24H7Z" fill="#fff"/><circle cx="16" cy="7" r="2" fill="#FFB020"/></svg>
+      BarberFlow
+    </div>
+    <div class="footer-links"><a href="#recursos">Recursos</a><a href="#precos">Preços</a><a href="#faq">FAQ</a></div>
+    <span>© 2026 BarberFlow. Feito com tesoura e estilo.</span>
+  </div>
+</footer>
+
+<script>
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  // ===== Scroll progress =====
+  const progress = document.getElementById('scrollProgress');
+  function updateProgress() {
+    const h = document.documentElement.scrollHeight - window.innerHeight;
+    progress.style.width = (h > 0 ? (window.scrollY / h) * 100 : 0) + '%';
+  }
+  window.addEventListener('scroll', updateProgress, { passive: true });
+  updateProgress();
+
+  // ===== Cursor customizado =====
+  const dot = document.getElementById('cursorDot');
+  const ring = document.getElementById('cursorRing');
+  if (window.matchMedia('(pointer: fine)').matches) {
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    window.addEventListener('mousemove', (e) => {
+      mx = e.clientX; my = e.clientY;
+      dot.style.left = mx + 'px'; dot.style.top = my + 'px';
+    });
+    (function loop() {
+      rx += (mx - rx) * 0.16; ry += (my - ry) * 0.16;
+      ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+      requestAnimationFrame(loop);
+    })();
+    document.querySelectorAll('a, button').forEach(el => {
+      el.addEventListener('mouseenter', () => ring.classList.add('hovering'));
+      el.addEventListener('mouseleave', () => ring.classList.remove('hovering'));
+    });
+  }
+
+  // ===== Partículas =====
+  const canvas = document.getElementById('particles');
+  const ctx = canvas.getContext('2d');
+  let W, H, parts = [];
+  const COLORS = ['#0095FF', '#FFB020', '#1FC55E', '#00B79B'];
+  function resize() { W = canvas.width = canvas.offsetWidth; H = canvas.height = canvas.offsetHeight; }
+  resize();
+  window.addEventListener('resize', resize);
+  function spawn() {
+    for (let i = 0; i < 22; i++) {
+      parts.push({
+        x: Math.random() * W, y: Math.random() * H,
+        r: 1.2 + Math.random() * 2.4,
+        vx: (Math.random() - 0.5) * 0.35, vy: -0.25 - Math.random() * 0.45,
+        c: COLORS[Math.floor(Math.random() * COLORS.length)],
+        a: 0.22 + Math.random() * 0.5,
+        tw: Math.random() * Math.PI * 2,
+      });
+    }
+  }
+  spawn();
+  function tick() {
+    ctx.clearRect(0, 0, W, H);
+    for (const p of parts) {
+      p.x += p.vx; p.y += p.vy; p.tw += 0.03;
+      if (p.y < -8) { p.y = H + 8; p.x = Math.random() * W; }
+      if (p.x < -8) p.x = W + 8; if (p.x > W + 8) p.x = -8;
+      ctx.globalAlpha = p.a * (0.6 + 0.4 * Math.sin(p.tw));
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = p.c;
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    requestAnimationFrame(tick);
+  }
+  tick();
+
+  // ===== Tilt 3D =====
+  if (window.matchMedia('(pointer: fine)').matches) {
+    document.querySelectorAll('.tilt').forEach(el => {
+      el.addEventListener('mousemove', (e) => {
+        const r = el.getBoundingClientRect();
+        const px = (e.clientX - r.left) / r.width - 0.5;
+        const py = (e.clientY - r.top) / r.height - 0.5;
+        el.style.transform = `perspective(900px) rotateY(${px * 10}deg) rotateX(${-py * 10}deg)`;
+      });
+      el.addEventListener('mouseleave', () => { el.style.transform = ''; });
+    });
+  }
+
+  // ===== Botões magnéticos =====
+  if (window.matchMedia('(pointer: fine)').matches) {
+    document.querySelectorAll('.magnetic').forEach(el => {
+      el.addEventListener('mousemove', (e) => {
+        const r = el.getBoundingClientRect();
+        const dx = (e.clientX - r.left - r.width / 2) * 0.22;
+        const dy = (e.clientY - r.top - r.height / 2) * 0.22;
+        el.style.transform = `translate(${dx}px, ${dy}px)`;
+      });
+      el.addEventListener('mouseleave', () => { el.style.transform = ''; });
+    });
+  }
+
+  // ===== Count-up =====
+  const counters = document.querySelectorAll('.count-num');
+  const cio = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      const el = e.target;
+      const target = parseFloat(el.dataset.count || '0');
+      const dec = (el.dataset.decimals || '0') === '1' ? 2 : 0;
+      const dur = 1400, t0 = performance.now();
+      (function step(t) {
+        const p = Math.min(1, (t - t0) / dur);
+        const ease = 1 - Math.pow(1 - p, 3);
+        const val = target * ease;
+        el.textContent = dec
+          ? val.toFixed(dec).replace('.', ',')
+          : Math.round(val).toLocaleString('pt-BR');
+        if (p < 1) requestAnimationFrame(step);
+      })(t0);
+      cio.unobserve(el);
+    });
+  }, { threshold: 0.6 });
+  counters.forEach(el => cio.observe(el));
+
+  // Slider de preço
+  const barbers = document.getElementById('barbers');
+  const countOut = document.getElementById('countOut');
+  const totalOut = document.getElementById('totalOut');
+  const PRICE = 9.9;
+  function calc() {
+    const n = Number(barbers.value);
+    countOut.textContent = n;
+    let per = PRICE;
+    if (n >= 5) per = 7.9;
+    if (n >= 10) per = 5.9;
+    totalOut.textContent = (per * n).toFixed(2).replace('.', ',');
+  }
+  barbers.addEventListener('input', calc);
+  calc();
+
+  // FAQ
+  document.querySelectorAll('.faq-q').forEach(q => {
+    q.addEventListener('click', () => {
+      const item = q.parentElement;
+      const open = item.classList.toggle('open');
+      const a = item.querySelector('.faq-a');
+      a.style.maxHeight = open ? a.scrollHeight + 'px' : '0px';
+    });
+  });
+</script>
+</body>
+</html>
