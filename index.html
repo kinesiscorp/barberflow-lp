@@ -148,8 +148,8 @@
 
   /* ---------- nav ---------- */
   .topstripe { height: 6px; }
-  .nav { position: sticky; top: 0; z-index: 60; background: var(--nav-bg); backdrop-filter: blur(18px) saturate(1.5); -webkit-backdrop-filter: blur(18px) saturate(1.5); border-bottom: 2px solid transparent; transition: border-color .3s ease; }
-  .nav.scrolled { border-color: var(--line-2); }
+  .nav { position: sticky; top: 0; z-index: 60; background: transparent; border-bottom: 2px solid transparent; transition: background-color .3s ease, border-color .3s ease, backdrop-filter .3s ease; }
+  .nav.scrolled { background: var(--nav-bg); backdrop-filter: blur(18px) saturate(1.5); -webkit-backdrop-filter: blur(18px) saturate(1.5); border-color: var(--line-2); }
   .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 72px; gap: 18px; }
   .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 900; font-size: 22px; letter-spacing: -.02em; }
   .brand .logo-tile { width: 36px; height: 36px; border-radius: 11px; box-shadow: 0 3px 0 var(--primary-shadow); }
@@ -168,7 +168,7 @@
   /* ================================================================
      HERO — Antes / Agora
      ================================================================ */
-  .hero { padding-block: 70px 30px; overflow: hidden; isolation: isolate; }
+  .hero { margin-top: -72px; padding-block: 142px 30px; overflow-x: clip; isolation: isolate; }
   .hero::before { content: ''; position: absolute; inset: 0; z-index: -1; background: radial-gradient(50% 40% at 12% 0%, rgba(0,151,245,.12), transparent 70%), radial-gradient(45% 40% at 92% 6%, rgba(0,151,245,.1), transparent 70%), linear-gradient(180deg, var(--hero-a) 0%, var(--bg) 70%); }
   .hero-copy { text-align: center; display: grid; justify-items: center; }
   .chip-top { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 22px; padding: 7px 14px; border-radius: 99px; background: var(--primary-soft); color: var(--primary-ink); font-size: 12.5px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; }
@@ -185,6 +185,11 @@
   .toggle .knob { position: absolute; top: 5px; bottom: 5px; left: 5px; border-radius: 13px; background: var(--primary); box-shadow: 0 3px 0 var(--primary-shadow); transition: transform .45s var(--spring), width .45s var(--spring); }
 
   .stage { position: relative; height: 650px; margin-top: 30px; }
+  .stage-sticky { position: relative; }
+  @media (min-width: 901px) {
+    .stage-track { height: 1280px; }
+    .stage-sticky { position: sticky; top: 84px; }
+  }
   .state { position: absolute; inset: 0; transition: opacity .5s ease, transform .6s var(--spring); }
   .stage[data-state="agora"] .st-antes, .stage[data-state="antes"] .st-agora { opacity: 0; transform: scale(.95) translateY(16px); pointer-events: none; visibility: hidden; transition: opacity .35s ease, transform .4s ease, visibility 0s linear .4s; }
 
@@ -497,7 +502,7 @@
     .notebook { margin-left: -195px; width: 390px; top: 0; }
     .zap { margin-left: -150px; top: 390px; }
     .warn { top: 740px; }
-    .stage[data-state="agora"] { height: 660px; }
+    .phone-wrap { top: 80px; }
     .living { height: auto; padding-block: 90px 60px; }
     .living-pin { position: static; height: auto; min-height: 0; padding-top: 0; }
     .living-stage { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 40px var(--gutter) 0; }
@@ -514,10 +519,9 @@
     .nav-cta .tx.keep span { display: none; }
     .nav-cta { gap: 12px; }
     .nav-cta .btn-sm { padding: 0 14px; }
-    .hero { padding-top: 44px; }
+    .hero { padding-top: 116px; }
     .hero-ctas .btn { flex: 1 1 100%; }
     .stage { transform: scale(.82); transform-origin: top center; margin-bottom: -142px; }
-    .stage[data-state="agora"] { margin-bottom: -118px; }
     .pains, .faq, .walkin, .calc-sec, .pricing { padding-block: 80px; }
     .feature { padding-block: 80px 110px; }
     .living-stage { grid-template-columns: 1fr; }
@@ -598,6 +602,7 @@
     <p class="micro">Configura em 2 minutos · Sem fidelidade · Cancela quando quiser</p>
   </div>
 
+  <div class="stage-track" id="stageTrack"><div class="stage-sticky">
   <div class="toggle" id="toggle" role="group" aria-label="Comparar antes e agora">
     <span class="knob" id="knob" aria-hidden="true"></span>
     <button type="button" data-to="antes" aria-pressed="true"><svg aria-hidden="true"><use href="#i-book"/></svg>Antes</button>
@@ -652,6 +657,7 @@
       </div>
     </div>
   </div>
+  </div></div>
 </section>
 
 <!-- ========== JÁ PASSOU POR ISSO? ========== -->
@@ -955,29 +961,42 @@
   const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: .15, rootMargin: '0px 0px -6% 0px' });
   document.querySelectorAll('[data-reveal]').forEach((el) => io.observe(el));
 
+  const desk = matchMedia('(min-width: 901px)');
   /* antes / agora */
   const stage = document.getElementById('stage');
   const knob = document.getElementById('knob');
   const btns = [...document.querySelectorAll('#toggle button')];
-  let touched = false;
-  const setState = (to) => {
+    const setState = (to) => {
     stage.dataset.state = to;
     btns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.to === to)));
     const on = btns.find((b) => b.dataset.to === to);
     knob.style.width = on.offsetWidth + 'px';
     knob.style.transform = `translateX(${on.offsetLeft - 5}px)`;
   };
-  btns.forEach((b) => b.addEventListener('click', () => { touched = true; setState(b.dataset.to); }));
+  btns.forEach((b) => b.addEventListener('click', () => setState(b.dataset.to)));
   addEventListener('resize', () => setState(stage.dataset.state));
   document.fonts?.ready.then(() => setState(stage.dataset.state));
-  if (reduce) setState('agora');
-  else { setState('antes'); setTimeout(() => { if (!touched) setState('agora'); }, 3400); }
+  setState('antes');
+  /* rolando pra sair do hero, o Antes vira Agora; voltando, volta pro Antes.
+     Só muda quando cruza a linha, então o clique no seletor é respeitado. */
+  const track = document.getElementById('stageTrack');
+  let zone = 'antes';
+  const heroScroll = () => {
+    let next;
+    if (desk.matches) {
+      const r = track.getBoundingClientRect();
+      const run = track.offsetHeight - track.firstElementChild.offsetHeight;
+      next = (84 - r.top) / Math.max(run, 1) > .38 ? 'agora' : 'antes';
+    } else {
+      next = stage.getBoundingClientRect().top < innerHeight * .12 ? 'agora' : 'antes';
+    }
+    if (next !== zone) { zone = next; setState(next); }
+  };
 
   /* tela única: cards se juntam no scroll */
   const living = document.getElementById('living');
   const cards = [...document.querySelectorAll('#livingStage .lcard')];
   const tile = document.getElementById('centerTile');
-  const desk = matchMedia('(min-width: 901px)');
   const back = (t) => { const c1 = 1.4, c3 = c1 + 1; return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2); };
   const assemble = () => {
     if (!desk.matches || reduce) { cards.forEach((c) => { c.style.transform = c.style.opacity = ''; }); tile.style.transform = ''; return; }
@@ -1001,7 +1020,7 @@
   addEventListener('resize', () => { resetOrigins(); requestAnimationFrame(assemble); });
   resetOrigins(); assemble();
   let ticking = false;
-  addEventListener('scroll', () => { if (ticking) return; ticking = true; requestAnimationFrame(() => { assemble(); ticking = false; }); }, { passive: true });
+  addEventListener('scroll', () => { if (ticking) return; ticking = true; requestAnimationFrame(() => { assemble(); heroScroll(); ticking = false; }); }, { passive: true });
 
   /* calculadora — mesma conta do bbrflow.com */
   const PRECO = 49.9, SEMANAS = 4.3;
