@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Bbrflow · Agenda, lembretes e financeiro para barbearias</title>
 <meta name="description" content="Seu cliente marca sozinho pelo link, recebe lembrete no WhatsApp e você vê quanto entrou no dia. O Bbrflow organiza a barbearia direto do celular." />
-<meta name="theme-color" content="#F2EFE8" />
+<meta name="theme-color" content="#FAF9F6" />
 <meta property="og:title" content="Bbrflow · Sua barbearia no controle" />
 <meta property="og:description" content="Agenda, link de agendamento, lembretes no WhatsApp e financeiro. Tudo no celular, R$ 49,90 por mês." />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230095FF'/%3E%3Cg fill='none' stroke='%23FFFFFF' stroke-width='4' stroke-linecap='round'%3E%3Ccircle cx='22' cy='22' r='6'/%3E%3Ccircle cx='22' cy='42' r='6'/%3E%3Cpath d='M27 25 46 44M27 39 46 20'/%3E%3C/g%3E%3C/svg%3E" />
@@ -19,11 +19,11 @@
      ajustada pro balcão da barbearia.
      ================================================================ */
   :root {
-    --paper: #F2EFE8;
-    --paper-2: #F7F5F0;
-    --ivory: #FBFAF7;
-    --line: #DDD8CC;
-    --line-soft: #E7E3D9;
+    --paper: #FAF9F6;
+    --paper-2: #F3F2EE;
+    --ivory: #FFFFFF;
+    --line: #E3E0D8;
+    --line-soft: #ECEAE4;
     --ink: #0E1A2A;
     --ink-2: #56677A;
     --ink-3: #7A899A;
@@ -120,7 +120,7 @@
 
   /* ---------- nav ---------- */
   .nav { position: fixed; inset: 0 0 auto 0; z-index: 60; transition: background-color .4s ease, box-shadow .4s ease, backdrop-filter .4s ease; }
-  .nav.scrolled { background: rgba(242,239,232,.82); backdrop-filter: blur(16px) saturate(1.1); -webkit-backdrop-filter: blur(16px) saturate(1.1); box-shadow: 0 1px 0 var(--line); }
+  .nav.scrolled { background: rgba(250,249,246,.84); backdrop-filter: blur(16px) saturate(1.1); -webkit-backdrop-filter: blur(16px) saturate(1.1); box-shadow: 0 1px 0 var(--line); }
   .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 72px; gap: 24px; }
   .nav-links { display: flex; gap: 30px; font-size: 15.5px; color: var(--ink-2); }
   .nav-links a { transition: color .2s ease; }
@@ -136,7 +136,7 @@
   .hero::before {
     content: ''; position: absolute; inset: 0; z-index: -2;
     background:
-      radial-gradient(60% 45% at 50% 72%, rgba(251,250,247,.95), transparent 70%),
+      radial-gradient(60% 45% at 50% 72%, #FFFFFF, transparent 70%),
       radial-gradient(40% 30% at 50% 100%, rgba(0,149,255,.18), transparent 70%);
   }
   .rays { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
@@ -282,12 +282,12 @@
   .center-tile {
     position: absolute; left: 50%; top: 44%; width: 300px; height: 300px; margin: -150px 0 0 -150px;
     border-radius: 64px; display: grid; place-items: center;
-    background: radial-gradient(120% 90% at 30% 20%, #5CC0FF, var(--blue) 50%, #0062B0);
-    box-shadow: 0 50px 80px -40px rgba(0,70,140,.7), inset 0 1px 0 rgba(255,255,255,.12), inset 0 0 0 1px rgba(255,255,255,.3);
+    background: linear-gradient(160deg, #FFFFFF 0%, #F4F6F9 60%, #E9EEF4 100%);
+    box-shadow: 0 50px 80px -40px rgba(14,26,42,.35), 0 10px 24px -12px rgba(14,26,42,.12), inset 0 1px 0 #FFFFFF, inset 0 0 0 1px rgba(14,26,42,.06);
     will-change: transform;
   }
-  .center-tile::before { content: ''; position: absolute; inset: 14px; border-radius: 52px; border: 1px solid rgba(255,255,255,.35); }
-  .center-tile svg { width: 120px; height: 120px; }
+  .center-tile .ring { width: 150px; height: 150px; border-radius: 50%; display: grid; place-items: center; border: 1.5px solid rgba(0,149,255,.45); box-shadow: 0 0 0 10px rgba(0,149,255,.06), inset 0 2px 6px rgba(14,26,42,.06); background: radial-gradient(closest-side, #FFFFFF, #F2F6FA); }
+  .center-tile svg { width: 96px; height: 96px; }
   .center-note {
     position: absolute; left: 50%; bottom: 3%; width: 400px; margin-left: -200px;
     background: var(--navy); color: var(--on-dark); border-radius: var(--r); padding: 18px 20px;
@@ -730,7 +730,7 @@
         <div class="mini-head"><span>Retorno</span><span class="num">automático</span></div>
         <p style="font-size:14.5px;margin-top:8px;line-height:1.5">Vinícius está há <b class="num" style="font-weight:500">35 dias</b> sem cortar. O lembrete de retorno já foi enviado.</p>
       </div>
-      <div class="center-tile" id="centerTile" aria-hidden="true"><svg><use href="#i-scissors" color="#FFFFFF"/></svg></div>
+      <div class="center-tile" id="centerTile" aria-hidden="true"><span class="ring"><svg><use href="#i-scissors" color="#0095FF"/></svg></span></div>
       <div class="center-note lcard" data-from="up">
         <span class="tag"><svg><use href="#i-link"/></svg>Seu link de agendamento</span>
         <p>Coloca no Instagram e no WhatsApp. O cliente escolhe serviço e horário sozinho, a qualquer hora, e cai direto na sua agenda.</p>
