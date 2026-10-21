@@ -148,20 +148,44 @@
 
   /* ---------- nav ---------- */
   .topstripe { height: 6px; }
-  .nav { position: sticky; top: 0; z-index: 60; background: transparent; border-bottom: 2px solid transparent; transition: background-color .3s ease, border-color .3s ease, backdrop-filter .3s ease; }
-  .nav.scrolled { background: var(--nav-bg); backdrop-filter: blur(18px) saturate(1.5); -webkit-backdrop-filter: blur(18px) saturate(1.5); border-color: var(--line-2); }
-  .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 72px; gap: 18px; }
-  .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 900; font-size: 22px; letter-spacing: -.02em; }
-  .brand .logo-tile { width: 36px; height: 36px; border-radius: 11px; box-shadow: 0 3px 0 var(--primary-shadow); }
+  /* navbar = pílula flutuante, igual à nav do app; transparente no topo */
+  .nav { position: sticky; top: 0; z-index: 60; padding-top: 10px; }
+  .nav-pill { position: relative; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px; height: 64px; padding: 0 10px 0 12px; border-radius: 22px; border: 2px solid transparent; transition: background-color .3s ease, border-color .3s ease, box-shadow .3s ease; }
+  .nav.scrolled .nav-pill, .nav.open .nav-pill { background: var(--nav-bg); backdrop-filter: blur(18px) saturate(1.5); -webkit-backdrop-filter: blur(18px) saturate(1.5); border-color: var(--border); box-shadow: var(--toon); }
+  .brand { justify-self: start; display: inline-flex; align-items: center; gap: 10px; font-weight: 900; font-size: 21px; letter-spacing: -.02em; }
+  .brand .logo-tile { width: 38px; height: 38px; border-radius: 12px; box-shadow: 0 3px 0 var(--primary-shadow); }
   .brand .logo-tile svg { width: 22px; height: 22px; }
-  .nav-cta { display: flex; align-items: center; gap: 22px; font-size: 15.5px; }
-  .nav-cta .tx { display: inline-flex; align-items: center; gap: 8px; font-weight: 800; color: var(--fg-nav); transition: color .2s ease; }
-  .nav-cta .tx svg { width: 19px; height: 19px; }
-  .nav-cta .tx:hover { color: var(--primary); }
-  .theme { flex: none; width: 44px; height: 44px; border-radius: 14px; border: 2px solid var(--border); background: var(--card); color: var(--fg); display: grid; place-items: center; cursor: pointer; box-shadow: 0 3px 0 var(--border); transition: transform .15s var(--spring), box-shadow .15s ease, color .2s ease; }
-  .theme:hover { transform: translateY(-2px); box-shadow: 0 5px 0 var(--border); color: var(--primary); }
-  .theme:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--border); }
-  .theme svg { width: 20px; height: 20px; }
+  .nav-links { display: flex; align-items: center; gap: 4px; }
+  .nav-links a { display: inline-flex; align-items: center; gap: 8px; height: 42px; padding: 0 14px; border-radius: 13px; font-size: 15.5px; font-weight: 800; color: var(--fg-nav); transition: background-color .2s ease, color .2s ease; }
+  .nav-links a svg { width: 18px; height: 18px; color: var(--fg-2); transition: color .2s ease; }
+  .nav-links a:hover { background: var(--bg-2); color: var(--fg); }
+  .nav-links a.on { background: rgba(0,151,245,.15); color: var(--primary); }
+  html { scroll-padding-top: 92px; }
+  .nav-actions .entrar svg { width: 17px; height: 17px; }
+  .mnav-secs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding-bottom: 8px; margin-bottom: 4px; border-bottom: 2px solid var(--line-2); }
+  .mnav-secs a { padding: 11px 12px; border-radius: 14px; background: var(--bg-2); font-size: 15.5px; font-weight: 800; text-align: center; }
+  .mnav-secs a:hover { color: var(--primary); }
+  .nav-actions { justify-self: end; display: flex; align-items: center; gap: 8px; }
+  .icon-btn { flex: none; width: 42px; height: 42px; border-radius: 13px; border: 2px solid var(--border); background: var(--card); color: var(--fg); display: grid; place-items: center; cursor: pointer; box-shadow: 0 3px 0 var(--border); transition: transform .15s var(--spring), box-shadow .15s ease, color .2s ease; }
+  .icon-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 0 var(--border); color: var(--primary); }
+  .icon-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--border); }
+  .icon-btn svg { width: 20px; height: 20px; }
+  .nav-actions .btn-sm { height: 42px; border-radius: 13px; }
+  .menu-btn { display: none; }
+  .menu-btn .x { display: none; }
+  .nav.open .menu-btn .bars { display: none; }
+  .nav.open .menu-btn .x { display: block; }
+  .mnav { position: absolute; left: 0; right: 0; top: calc(100% + 10px); padding: 10px; display: grid; gap: 6px; transform-origin: top center; animation: drop-menu .3s var(--spring); }
+  .mnav[hidden] { display: none; }
+  @keyframes drop-menu { from { opacity: 0; transform: translateY(-8px) scale(.97); } to { opacity: 1; transform: none; } }
+  .mnav a.row-link { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 16px; font-size: 16.5px; font-weight: 800; }
+  .mnav a.row-link:hover { background: var(--bg-2); }
+  .mnav a.row-link .tile { width: 40px; height: 40px; border-radius: 12px; }
+  .mnav a.row-link .tile svg { width: 20px; height: 20px; }
+  .mnav a.row-link small { display: block; font-size: 13px; font-weight: 700; color: var(--fg-2); }
+  .mnav a.row-link > svg { margin-left: auto; width: 18px; height: 18px; color: var(--fg-2); transform: rotate(180deg); }
+  .mnav .btn { width: 100%; margin-top: 4px; }
+
   .theme .moon { display: none; }
   .is-dark .theme .sun { display: none; }
   .is-dark .theme .moon { display: block; animation: spin-in .4s var(--spring); }
@@ -171,7 +195,7 @@
   /* ================================================================
      HERO — Antes / Agora
      ================================================================ */
-  .hero { margin-top: -72px; padding-block: 142px 30px; overflow-x: clip; isolation: isolate; }
+  .hero { margin-top: -78px; padding-block: 148px 30px; overflow-x: clip; isolation: isolate; }
   .hero::before { content: ''; position: absolute; inset: 0; z-index: -1; background: radial-gradient(50% 40% at 12% 0%, rgba(0,151,245,.12), transparent 70%), radial-gradient(45% 40% at 92% 6%, rgba(0,151,245,.1), transparent 70%), linear-gradient(180deg, var(--hero-a) 0%, var(--bg) 70%); }
   .hero-copy { text-align: center; display: grid; justify-items: center; }
   .chip-top { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 22px; padding: 7px 14px; border-radius: 99px; background: var(--primary-soft); color: var(--primary-ink); font-size: 12.5px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; }
@@ -191,7 +215,7 @@
   .stage-sticky { position: relative; }
   @media (min-width: 901px) {
     .stage-track { height: 1280px; }
-    .stage-sticky { position: sticky; top: 84px; }
+    .stage-sticky { position: sticky; top: 92px; }
   }
   .state { position: absolute; inset: 0; transition: opacity .5s ease, transform .6s var(--spring); }
   .stage[data-state="agora"] .st-antes, .stage[data-state="antes"] .st-agora { opacity: 0; transform: scale(.95) translateY(16px); pointer-events: none; visibility: hidden; transition: opacity .35s ease, transform .4s ease, visibility 0s linear .4s; }
@@ -290,7 +314,7 @@
      TUDO NUMA TELA SÓ
      ================================================================ */
   .living { position: relative; height: 260vh; background: var(--sky); }
-  .living-pin { position: sticky; top: 72px; height: calc(100vh - 72px); min-height: 680px; overflow: hidden; display: flex; flex-direction: column; padding-top: 44px; }
+  .living-pin { position: sticky; top: 78px; height: calc(100vh - 78px); min-height: 680px; overflow: hidden; display: flex; flex-direction: column; padding-top: 44px; }
   .living-title { text-align: center; }
   .living-stage { position: relative; flex: 1; width: 100%; max-width: 1240px; margin: 0 auto; }
   .lcard { position: absolute; padding: 15px 16px; will-change: transform, opacity; }
@@ -488,6 +512,12 @@
   /* ================================================================
      RESPONSIVO
      ================================================================ */
+  @media (max-width: 1060px) {
+    .nav-pill { grid-template-columns: 1fr auto; }
+    .nav-links, .nav-actions .entrar { display: none; }
+    .menu-btn { display: grid; }
+  }
+  @media (max-width: 560px) { .nav-actions .assinar { display: none; } }
   @media (max-width: 1100px) {
     .chip.c2, .chip.c4 { display: none; }
     .l2, .l5 { display: none; }
@@ -517,12 +547,7 @@
   }
   @media (max-width: 640px) {
     body { font-size: 16px; }
-    .nav-cta .tx { display: none; }
-    .nav-cta .tx.keep { display: inline-flex; }
-    .nav-cta .tx.keep span { display: none; }
-    .nav-cta { gap: 12px; }
-    .nav-cta .btn-sm { padding: 0 14px; }
-    .hero { padding-top: 116px; }
+    .hero { padding-top: 122px; }
     .hero-ctas .btn { flex: 1 1 100%; }
     .stage { transform: scale(.82); transform-origin: top center; margin-bottom: -142px; }
     .pains, .faq, .walkin, .calc-sec, .pricing { padding-block: 80px; }
@@ -533,7 +558,6 @@
     .foot { grid-template-columns: 1fr; }
     .toast { position: relative; inset: auto; width: auto; margin-top: 16px; }
   }
-  @media (max-width: 430px) { .brand .bt { display: none; } }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition-duration: .01ms !important; transition-delay: 0s !important; }
     html { scroll-behavior: auto; }
@@ -544,6 +568,8 @@
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
+    <symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></symbol>
     <symbol id="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
     <symbol id="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11z"/></symbol>
     <symbol id="i-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
@@ -575,14 +601,30 @@
 
 <div class="topstripe stripe" aria-hidden="true"></div>
 <header class="nav" id="nav">
-  <div class="wrap nav-inner">
-    <a href="#" class="brand" aria-label="Bbrflow, voltar ao topo"><span class="logo-tile"><svg aria-hidden="true"><use href="#i-scissors"/></svg></span><span class="bt">Bbrflow</span></a>
-    <nav class="nav-cta" aria-label="Principal">
-      <a class="tx" href="https://www.bbrflow.com/"><svg aria-hidden="true"><use href="#i-cal"/></svg>Agendar horário</a>
-      <a class="tx keep" href="https://www.bbrflow.com/auth" aria-label="Área do barbeiro"><svg aria-hidden="true"><use href="#i-login"/></svg><span>Área do barbeiro</span></a>
-      <button type="button" class="theme" id="theme" aria-label="Mudar para tema escuro"><svg class="sun" aria-hidden="true"><use href="#i-sun"/></svg><svg class="moon" aria-hidden="true"><use href="#i-moon"/></svg></button>
-      <a class="btn btn-primary btn-sm" href="https://www.bbrflow.com/comecar">Assinar</a>
-    </nav>
+  <div class="wrap">
+    <div class="nav-pill">
+      <a href="#" class="brand" aria-label="Bbrflow, voltar ao topo"><span class="logo-tile"><svg aria-hidden="true"><use href="#i-scissors"/></svg></span>Bbrflow</a>
+      <nav class="nav-links" aria-label="Seções">
+        <a href="#living" data-spy="living">Como funciona</a>
+        <a href="#conta" data-spy="conta">Calculadora</a>
+        <a href="#duvidas" data-spy="duvidas">Dúvidas</a>
+        <a href="#preco" data-spy="preco">Preço</a>
+      </nav>
+      <div class="nav-actions">
+        <button type="button" class="icon-btn theme" id="theme" aria-label="Mudar para tema escuro"><svg class="sun" aria-hidden="true"><use href="#i-sun"/></svg><svg class="moon" aria-hidden="true"><use href="#i-moon"/></svg></button>
+        <a class="btn btn-white btn-sm entrar" href="https://www.bbrflow.com/auth"><svg aria-hidden="true"><use href="#i-login"/></svg>Entrar</a>
+        <a class="btn btn-primary btn-sm assinar" href="https://www.bbrflow.com/comecar">Assinar</a>
+        <button type="button" class="icon-btn menu-btn" id="menuBtn" aria-label="Abrir menu" aria-expanded="false" aria-controls="mnav"><svg class="bars" aria-hidden="true"><use href="#i-menu"/></svg><svg class="x" aria-hidden="true"><use href="#i-x"/></svg></button>
+      </div>
+      <div class="mnav toon" id="mnav" hidden>
+        <div class="mnav-secs">
+          <a href="#living">Como funciona</a><a href="#conta">Calculadora</a><a href="#duvidas">Dúvidas</a><a href="#preco">Preço</a>
+        </div>
+        <a class="row-link" href="https://www.bbrflow.com/"><span class="tile b"><svg aria-hidden="true"><use href="#i-cal"/></svg></span><span>Agendar horário<small>Para clientes marcarem</small></span><svg aria-hidden="true"><use href="#i-chev"/></svg></a>
+        <a class="row-link" href="https://www.bbrflow.com/auth"><span class="tile g"><svg aria-hidden="true"><use href="#i-login"/></svg></span><span>Área do barbeiro<small>Entrar na sua conta</small></span><svg aria-hidden="true"><use href="#i-chev"/></svg></a>
+        <a class="btn btn-primary" href="https://www.bbrflow.com/comecar">Assinar o Bbrflow <svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
+      </div>
+    </div>
   </div>
 </header>
 
@@ -809,7 +851,7 @@
 </section>
 
 <!-- ========== OBJEÇÕES ========== -->
-<section class="faq" aria-labelledby="duvidas-title">
+<section class="faq" id="duvidas" aria-labelledby="duvidas-title">
   <div class="wrap faq-grid">
     <div class="faq-side">
       <h2 class="h2" id="duvidas-title" data-reveal>"Mas o meu caderno funciona…"</h2>
@@ -909,6 +951,8 @@
             <li><a href="https://www.bbrflow.com">Bbrflow</a><span>Barbearias</span></li>
             <li>PedidosFlow<span>Encomendas e retirada</span></li>
           </ul>
+          <h4 style="margin-top:26px">Para clientes</h4>
+          <ul><li><a href="https://www.bbrflow.com/"><svg aria-hidden="true"><use href="#i-cal"/></svg>Agendar horário</a></li></ul>
         </div>
         <div>
           <h4>Falar com a gente</h4>
@@ -956,6 +1000,28 @@
   });
 
   const nav = document.getElementById('nav');
+  /* seção ativa na navbar (cápsula azul, como no app) */
+  const spyLinks = [...document.querySelectorAll('.nav-links a[data-spy]')];
+  const spyIds = spyLinks.map((a) => a.dataset.spy);
+  const spy = () => {
+    const y = innerHeight * .35; let cur = null;
+    spyIds.forEach((id) => { const el = document.getElementById(id); if (el) { const r = el.getBoundingClientRect(); if (r.top <= y && r.bottom > y) cur = id; } });
+    spyLinks.forEach((a) => { const on = a.dataset.spy === cur; a.classList.toggle('on', on); on ? a.setAttribute('aria-current', 'true') : a.removeAttribute('aria-current'); });
+  };
+  addEventListener('scroll', spy, { passive: true }); spy();
+  /* menu do celular */
+  const menuBtn = document.getElementById('menuBtn');
+  const mnav = document.getElementById('mnav');
+  const setMenu = (open) => {
+    mnav.hidden = !open; nav.classList.toggle('open', open);
+    menuBtn.setAttribute('aria-expanded', String(open));
+    menuBtn.setAttribute('aria-label', open ? 'Fechar menu' : 'Abrir menu');
+  };
+  menuBtn.addEventListener('click', () => setMenu(mnav.hidden));
+  mnav.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setMenu(false)));
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !mnav.hidden) { setMenu(false); menuBtn.focus(); } });
+  document.addEventListener('click', (e) => { if (!mnav.hidden && !nav.contains(e.target)) setMenu(false); });
+  matchMedia('(min-width: 1061px)').addEventListener('change', (e) => { if (e.matches) setMenu(false); });
   const onNav = () => nav.classList.toggle('scrolled', scrollY > 10);
   addEventListener('scroll', onNav, { passive: true }); onNav();
 
@@ -987,7 +1053,7 @@
     if (desk.matches) {
       const r = track.getBoundingClientRect();
       const run = track.offsetHeight - track.firstElementChild.offsetHeight;
-      next = (84 - r.top) / Math.max(run, 1) > .38 ? 'agora' : 'antes';
+      next = (92 - r.top) / Math.max(run, 1) > .38 ? 'agora' : 'antes';
     } else {
       next = stage.getBoundingClientRect().top < innerHeight * .12 ? 'agora' : 'antes';
     }
