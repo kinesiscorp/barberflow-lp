@@ -356,6 +356,28 @@
   /* grade: cards alinhados nas bordas, logo no centro, linhas ligando tudo */
   .living-stage { position: relative; flex: 1; width: 100%; max-width: 1240px; margin: 0 auto; padding: 36px var(--gutter) 44px; display: grid; grid-template-columns: minmax(0, 320px) minmax(0, 1fr) minmax(0, 320px); grid-template-rows: repeat(3, auto); row-gap: 26px; align-content: center; }
   .lcard { position: relative; z-index: 1; padding: 15px 16px; will-change: transform, opacity; align-self: center; }
+  /* hover: o card sobe e inclina, brilha, o ícone balança, as barras reenchem e a linha até o logo acende.
+     Usa translate/scale/rotate (propriedades próprias) porque o scroll já escreve em `transform`. */
+  .lcard { transition: translate .35s var(--spring), scale .35s var(--spring), rotate .35s var(--spring), box-shadow .3s ease, border-color .25s ease; }
+  .lcard:hover { translate: 0 -8px; scale: 1.025; rotate: -.7deg; border-color: var(--primary); box-shadow: 0 8px 0 rgba(5,118,189,.32), 0 26px 44px -18px rgba(0,120,220,.5); z-index: 3; }
+  .lcard.l4:hover, .lcard.l5:hover, .lcard.l6:hover { rotate: .7deg; }
+  .lcard.center-note:hover { rotate: 0deg; }
+  .lcard .lc-hd .tile, .lcard > .tile { transition: transform .45s var(--spring); }
+  .lcard:hover .lc-hd .tile, .lcard:hover > .tile { transform: rotate(-10deg) scale(1.14); }
+  .lcard:hover .bars-pay i b { animation: refill .9s cubic-bezier(.2,.8,.2,1) both; }
+  .lcard:hover .bars-pay div:nth-child(2) i b { animation-delay: .08s; } .lcard:hover .bars-pay div:nth-child(3) i b { animation-delay: .16s; }
+  @keyframes refill { from { transform: scaleX(0); } to { transform: none; } }
+  .bars-pay i b { transform-origin: left; }
+  .row, .rank > div, .svc > div { transition: translate .25s var(--spring), color .2s ease; }
+  .lcard:hover .row:hover, .lcard:hover .rank > div:hover, .lcard:hover .svc > div:hover { translate: 4px 0; }
+  .lcard:hover .row:hover .t { color: var(--fg); }
+  .lcard .v { transition: scale .35s var(--spring); transform-origin: left center; }
+  .lcard:hover .v { scale: 1.05; }
+  .lk { transition: opacity .25s ease, stroke-width .25s ease; }
+  .lk.hot { opacity: .95; stroke-width: 3.6; filter: drop-shadow(0 0 6px rgba(0,151,245,.7)); }
+  .lk-flow.hot { stroke-width: 5; opacity: 1; animation-duration: 1.1s !important; }
+  .lk-dot { transition: r .25s var(--spring); }
+  .lk-dot.hot { r: 8; }
   .links { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: 0; }
   .lk { fill: none; stroke: var(--primary); stroke-width: 2.5; stroke-linecap: round; opacity: .38; stroke-dasharray: 1; stroke-dashoffset: 1; }
   .lk-flow { fill: none; stroke: var(--primary); stroke-width: 3.5; stroke-linecap: round; stroke-dasharray: .07 .93; opacity: 0; }
@@ -604,7 +626,7 @@
     .toast { position: relative; inset: auto; width: auto; margin-top: 16px; }
   }
   @media (max-width: 400px) { .stage { --k: .56; } }
-  @media (prefers-reduced-motion: reduce) { .links.live .lk-flow { animation: none; opacity: 0; } .nav-peek > svg { animation: none !important; } .nav-pill, .nav-inner { transition-duration: .01s !important; } }
+  @media (prefers-reduced-motion: reduce) { .lcard:hover { translate: none; scale: 1; rotate: 0deg; } .lcard:hover .bars-pay i b { animation: none; } .links.live .lk-flow { animation: none; opacity: 0; } .nav-peek > svg { animation: none !important; } .nav-pill, .nav-inner { transition-duration: .01s !important; } }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition-duration: .01ms !important; transition-delay: 0s !important; }
     html { scroll-behavior: auto; }
@@ -1147,10 +1169,12 @@
       flow.style.setProperty('--fd', (-(i * .5)).toFixed(2) + 's');
       const dot = mk('circle', { cx: x1, cy: y1, r: 5, class: 'lk-dot' });
       links.append(base, flow, dot);
-      lines.push({ base, dot });
+      lines.push({ base, flow, dot });
     });
   };
   const back = (t) => { const c1 = 1.4, c3 = c1 + 1; return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2); };
+  const hot = (i, on) => { const l = lines[i]; if (l) [l.base, l.flow, l.dot].forEach((n) => n.classList.toggle('hot', on)); };
+  cards.forEach((c, i) => { c.addEventListener('pointerenter', () => hot(i, true)); c.addEventListener('pointerleave', () => hot(i, false)); c.addEventListener('focusin', () => hot(i, true)); c.addEventListener('focusout', () => hot(i, false)); });
   const setLines = (vals) => lines.forEach((l, i) => { const v = vals(i); l.base.style.strokeDashoffset = String(1 - v); l.dot.style.opacity = v > .98 ? '1' : '0'; });
   const assemble = () => {
     if (!desk.matches || reduce) {
