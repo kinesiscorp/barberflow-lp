@@ -195,33 +195,39 @@
   /* ================================================================
      HERO — Antes / Agora
      ================================================================ */
-  .hero { margin-top: -78px; padding-block: 148px 30px; overflow-x: clip; isolation: isolate; }
+  .hero { margin-top: -78px; overflow-x: clip; isolation: isolate; }
   .hero::before { content: ''; position: absolute; inset: 0; z-index: -1; background: radial-gradient(50% 40% at 12% 0%, rgba(0,151,245,.12), transparent 70%), radial-gradient(45% 40% at 92% 6%, rgba(0,151,245,.1), transparent 70%), linear-gradient(180deg, var(--hero-a) 0%, var(--bg) 70%); }
-  .hero-copy { text-align: center; display: grid; justify-items: center; }
+
+  /* duas colunas: a copy à esquerda, o Antes/Agora à direita */
+  .hero-sticky { display: flex; align-items: center; min-height: 100vh; padding-block: 120px 40px; }
+  .hero-grid { width: 100%; display: grid; grid-template-columns: minmax(0, 1fr) 500px; gap: clamp(32px, 4vw, 56px); align-items: center; }
+  .hero-copy { display: grid; justify-items: start; text-align: left; }
   .chip-top { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 22px; padding: 7px 14px; border-radius: 99px; background: var(--primary-soft); color: var(--primary-ink); font-size: 12.5px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; }
   .chip-top svg { width: 15px; height: 15px; }
-  .hero .display { max-width: 13em; }
-  .hero .lead { margin-top: 22px; text-align: center; max-width: 36em; }
-  .hero-ctas { margin-top: 32px; display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+  .hero .display { font-size: clamp(2.5rem, 4.4vw, 4.1rem); max-width: 11.5em; }
+  .hero .lead { margin-top: 22px; max-width: 31em; }
+  .hero-ctas { margin-top: 32px; display: flex; gap: 14px; flex-wrap: wrap; }
   .hero .micro { margin-top: 16px; }
 
-  .toggle { margin: 44px auto 0; display: flex; width: max-content; padding: 5px; gap: 4px; border-radius: 18px; background: var(--bg-2); border: 2px solid var(--border); position: relative; }
+  .hero-visual { display: grid; justify-items: center; }
+  .toggle { display: flex; width: max-content; padding: 5px; gap: 4px; border-radius: 18px; background: var(--bg-2); border: 2px solid var(--border); position: relative; }
   .toggle button { position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 22px; border: 0; border-radius: 13px; background: none; cursor: pointer; font-size: 16px; font-weight: 800; color: var(--fg-2); transition: color .3s ease; }
   .toggle button svg { width: 18px; height: 18px; }
   .toggle button[aria-pressed="true"] { color: #fff; }
   .toggle .knob { position: absolute; top: 5px; bottom: 5px; left: 5px; border-radius: 13px; background: var(--primary); box-shadow: 0 3px 0 var(--primary-shadow); transition: transform .45s var(--spring), width .45s var(--spring); }
 
-  .stage { position: relative; height: 650px; margin-top: 30px; }
-  .stage-sticky { position: relative; }
+  /* o palco é desenhado em 560x640 e escalado por --k, assim cabe em qualquer coluna */
+  .stage { --k: .86; position: relative; width: calc(560px * var(--k)); height: calc(640px * var(--k)); margin-top: 18px; }
+  .scene { position: absolute; left: 0; top: 0; width: 560px; height: 640px; transform: scale(var(--k)); transform-origin: top left; }
   @media (min-width: 901px) {
-    .stage-track { height: 1280px; }
-    .stage-sticky { position: sticky; top: 92px; }
+    .hero-track { height: 175vh; }
+    .hero-sticky { position: sticky; top: 0; }
   }
   .state { position: absolute; inset: 0; transition: opacity .5s ease, transform .6s var(--spring); }
   .stage[data-state="agora"] .st-antes, .stage[data-state="antes"] .st-agora { opacity: 0; transform: scale(.95) translateY(16px); pointer-events: none; visibility: hidden; transition: opacity .35s ease, transform .4s ease, visibility 0s linear .4s; }
 
   /* antes */
-  .notebook { position: absolute; left: 50%; top: 18px; width: 390px; margin-left: -420px; padding: 24px 28px 28px 54px; background: var(--notebook) repeating-linear-gradient(to bottom, transparent 0 37px, #D9E3EC 37px 38px); background-position: 0 56px; border-radius: 6px 16px 16px 6px; transform: rotate(-4deg); border: 2px solid #EADFBF; box-shadow: 0 6px 0 #E6DCBE, 0 30px 40px -30px rgba(0,0,0,.35); font-family: var(--hand); color: var(--pencil); font-size: 25px; line-height: 38px; font-weight: 500; }
+  .notebook { position: absolute; left: 0; top: 36px; width: 350px; margin-left: 0; padding: 24px 28px 28px 54px; background: var(--notebook) repeating-linear-gradient(to bottom, transparent 0 37px, #D9E3EC 37px 38px); background-position: 0 56px; border-radius: 6px 16px 16px 6px; transform: rotate(-4deg); border: 2px solid #EADFBF; box-shadow: 0 6px 0 #E6DCBE, 0 30px 40px -30px rgba(0,0,0,.35); font-family: var(--hand); color: var(--pencil); font-size: 22px; line-height: 38px; font-weight: 500; }
   .notebook::before { content: ''; position: absolute; left: 38px; top: 0; bottom: 0; width: 2px; background: rgba(239,68,68,.35); }
   .notebook::after { content: ''; position: absolute; right: 26px; bottom: 28px; width: 92px; height: 92px; border-radius: 50%; border: 9px solid rgba(140,100,60,.12); }
   .notebook h5 { font-family: var(--font); font-weight: 900; font-size: 12px; letter-spacing: .14em; color: var(--fg-2); line-height: 20px; margin-bottom: 18px; }
@@ -229,17 +235,17 @@
   .notebook s { text-decoration-thickness: 2px; color: #8A8F99; }
   .notebook .q { color: #8A8F99; }
   .notebook .red { color: var(--danger); font-weight: 600; }
-  .zap { position: absolute; left: 50%; top: 4px; width: 300px; margin-left: 24px; display: grid; gap: 12px; }
+  .zap { position: absolute; left: 296px; top: 128px; width: 264px; display: grid; gap: 12px; }
   .zap .bb { position: relative; background: var(--card); border: 2px solid var(--border); border-radius: 6px 20px 20px 20px; padding: 10px 15px 8px; box-shadow: 0 4px 0 var(--border); font-size: 15.5px; font-weight: 700; }
   .zap .bb small { display: block; font-size: 11.5px; color: var(--fg-2); font-weight: 700; margin-top: 1px; }
   .zap .bb:nth-child(1) { transform: rotate(2deg); } .zap .bb:nth-child(2) { transform: rotate(-1.5deg) translateX(-14px); }
   .zap .bb:nth-child(3) { transform: rotate(1deg) translateX(16px); } .zap .bb:nth-child(4) { transform: rotate(-2deg); }
   .unread { position: absolute; right: -14px; top: -13px; background: var(--danger); color: #fff; font-size: 12.5px; font-weight: 900; padding: 4px 11px; border-radius: 99px; transform: rotate(6deg); box-shadow: 0 3px 0 #B91C1C; }
-  .warn { position: absolute; left: 50%; top: 500px; transform: translateX(-50%); display: inline-flex; align-items: center; gap: 9px; padding: 10px 18px; border-radius: 16px; background: var(--card); border: 2px solid var(--border); font-size: 15.5px; font-weight: 800; box-shadow: 0 4px 0 var(--border); white-space: nowrap; }
+  .warn { position: absolute; left: 50%; top: 524px; transform: translateX(-50%); display: inline-flex; align-items: center; gap: 9px; padding: 10px 18px; border-radius: 16px; background: var(--card); border: 2px solid var(--border); font-size: 15.5px; font-weight: 800; box-shadow: 0 4px 0 var(--border); white-space: nowrap; }
   .warn svg { width: 18px; height: 18px; color: var(--danger); }
 
   /* agora: o painel do app no celular */
-  .phone-wrap { position: absolute; left: 50%; top: 0; width: 300px; margin-left: -150px; animation: bob 3.2s ease-in-out infinite; }
+  .phone-wrap { position: absolute; left: 130px; top: 8px; width: 300px; margin-left: 0; animation: bob 3.2s ease-in-out infinite; }
   @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
   .phone { position: relative; width: 300px; height: 610px; border-radius: 46px; padding: 10px; background: #111; box-shadow: 0 0 0 2px var(--bezel-ring), 0 8px 0 #000, 0 40px 60px -30px rgba(0,60,120,.45); transform: rotate(3deg); }
   .phone::after { content: ''; position: absolute; left: 50%; top: 18px; width: 80px; height: 22px; margin-left: -40px; background: #000; border-radius: 99px; z-index: 3; }
@@ -285,8 +291,9 @@
   .chip { position: absolute; display: inline-flex; align-items: center; gap: 10px; padding: 7px 15px 7px 7px; border-radius: 16px; background: var(--card); border: 2px solid var(--border); box-shadow: 0 4px 0 var(--border); font-size: 14.5px; font-weight: 800; white-space: nowrap; }
   .chip .tile { width: 32px; height: 32px; border-radius: 10px; box-shadow: none; }
   .chip .tile svg { width: 17px; height: 17px; }
-  .chip.c1 { left: 5%; top: 12%; } .chip.c2 { left: 11%; top: 50%; }
-  .chip.c3 { right: 5%; top: 7%; } .chip.c4 { right: 12%; top: 44%; }
+  .chip { z-index: 4; }
+  .chip.c1 { left: -14px; top: 150px; } .chip.c2 { left: -4px; top: 430px; }
+  .chip.c3 { right: -14px; top: 104px; } .chip.c4 { right: -8px; top: 372px; }
   .stage[data-state="agora"] .chip { animation: pop .6s var(--spring) both; animation-delay: var(--d); }
   @keyframes pop { from { opacity: 0; transform: scale(.6) translateY(12px); } to { opacity: 1; transform: none; } }
   .stage[data-state="antes"] .notebook, .stage[data-state="antes"] .zap .bb, .stage[data-state="antes"] .warn { animation: drop .6s var(--spring) both; }
@@ -519,10 +526,9 @@
   }
   @media (max-width: 560px) { .nav-actions .assinar { display: none; } }
   @media (max-width: 1100px) {
-    .chip.c2, .chip.c4 { display: none; }
     .l2, .l5 { display: none; }
-    .notebook { margin-left: -390px; width: 360px; }
   }
+  @media (min-width: 901px) and (max-width: 1180px) { .stage { --k: .74; } .hero-grid { grid-template-columns: minmax(0, 1fr) 420px; } }
   @media (max-width: 900px) {
     .feature, .calc, .faq-grid, .walkin-grid { grid-template-columns: 1fr; }
     .pain-grid { grid-template-columns: 1fr; }
@@ -530,12 +536,12 @@
     .plan { grid-template-columns: 1fr; }
     .foot { grid-template-columns: 1fr 1fr; }
     .foot > div:first-child { grid-column: 1 / -1; }
-    .chip { display: none; }
-    .stage { height: 790px; }
-    .notebook { margin-left: -195px; width: 390px; top: 0; }
-    .zap { margin-left: -150px; top: 390px; }
-    .warn { top: 740px; }
-    .phone-wrap { top: 80px; }
+    .hero-sticky { min-height: 0; padding-block: 122px 30px; }
+    .hero-grid { grid-template-columns: 1fr; gap: 36px; }
+    .hero-copy { justify-items: center; text-align: center; }
+    .hero .display { max-width: 13em; }
+    .hero-ctas { justify-content: center; }
+    .stage { --k: .98; }
     .living { height: auto; padding-block: 90px 60px; }
     .living-pin { position: static; height: auto; min-height: 0; padding-top: 0; }
     .living-stage { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 40px var(--gutter) 0; }
@@ -547,9 +553,9 @@
   }
   @media (max-width: 640px) {
     body { font-size: 16px; }
-    .hero { padding-top: 122px; }
     .hero-ctas .btn { flex: 1 1 100%; }
-    .stage { transform: scale(.82); transform-origin: top center; margin-bottom: -142px; }
+    .stage { --k: .62; }
+    .hero-ctas .btn { flex: 1 1 100%; }
     .pains, .faq, .walkin, .calc-sec, .pricing { padding-block: 80px; }
     .feature { padding-block: 80px 110px; }
     .living-stage { grid-template-columns: 1fr; }
@@ -558,6 +564,7 @@
     .foot { grid-template-columns: 1fr; }
     .toast { position: relative; inset: auto; width: auto; margin-top: 16px; }
   }
+  @media (max-width: 400px) { .stage { --k: .56; } }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition-duration: .01ms !important; transition-delay: 0s !important; }
     html { scroll-behavior: auto; }
@@ -631,7 +638,9 @@
 <main>
 <!-- ========== HERO ========== -->
 <section class="hero" aria-labelledby="hero-title">
-  <div class="wrap hero-copy">
+  <div class="hero-track" id="stageTrack"><div class="hero-sticky">
+    <div class="wrap hero-grid">
+  <div class="hero-copy">
     <span class="chip-top"><svg aria-hidden="true"><use href="#i-scissors"/></svg>Feito pra barbearia</span>
     <h1 class="display" id="hero-title">Seu caderno não avisa quando o cliente <span class="blue">vai furar.</span></h1>
     <p class="lead">O Bbrflow faz o que a agenda de papel, o zap e a sua memória não fazem: confirma o horário sozinho, guarda o histórico de cada cliente e fecha a conta do mês no automático.</p>
@@ -642,14 +651,13 @@
     <p class="micro">Configura em 2 minutos · Sem fidelidade · Cancela quando quiser</p>
   </div>
 
-  <div class="stage-track" id="stageTrack"><div class="stage-sticky">
+      <div class="hero-visual">
   <div class="toggle" id="toggle" role="group" aria-label="Comparar antes e agora">
     <span class="knob" id="knob" aria-hidden="true"></span>
     <button type="button" data-to="antes" aria-pressed="true"><svg aria-hidden="true"><use href="#i-book"/></svg>Antes</button>
     <button type="button" data-to="agora" aria-pressed="false"><svg aria-hidden="true"><use href="#i-phone"/></svg>Agora</button>
   </div>
-
-  <div class="stage" id="stage" data-state="antes">
+        <div class="stage" id="stage" data-state="antes"><div class="scene">
     <div class="state st-antes" aria-label="Antes: caderno, WhatsApp e memória">
       <div class="notebook" aria-hidden="true">
         <h5>QUINTA — AGENDA</h5>
@@ -696,7 +704,9 @@
         </div>
       </div>
     </div>
-  </div>
+        </div></div>
+      </div>
+    </div>
   </div></div>
 </section>
 
@@ -1053,7 +1063,7 @@
     if (desk.matches) {
       const r = track.getBoundingClientRect();
       const run = track.offsetHeight - track.firstElementChild.offsetHeight;
-      next = (92 - r.top) / Math.max(run, 1) > .38 ? 'agora' : 'antes';
+      next = (0 - r.top) / Math.max(run, 1) > .3 ? 'agora' : 'antes';
     } else {
       next = stage.getBoundingClientRect().top < innerHeight * .12 ? 'agora' : 'antes';
     }
