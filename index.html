@@ -321,10 +321,19 @@
      TUDO NUMA TELA SÓ
      ================================================================ */
   .living { position: relative; height: 260vh; background: var(--sky); }
-  .living-pin { position: sticky; top: 78px; height: calc(100vh - 78px); min-height: 680px; overflow: hidden; display: flex; flex-direction: column; padding-top: 44px; }
+  .living-pin { position: sticky; top: 78px; height: calc(100vh - 78px); min-height: 640px; overflow: hidden; display: flex; flex-direction: column; padding-top: 30px; }
+  @media (max-height: 820px) { .living-stage { zoom: .88; } }
+  @media (max-height: 700px) { .living-stage { zoom: .76; } }
   .living-title { text-align: center; }
-  .living-stage { position: relative; flex: 1; width: 100%; max-width: 1240px; margin: 0 auto; }
-  .lcard { position: absolute; padding: 15px 16px; will-change: transform, opacity; }
+  /* grade: cards alinhados nas bordas, logo no centro, linhas ligando tudo */
+  .living-stage { position: relative; flex: 1; width: 100%; max-width: 1240px; margin: 0 auto; padding: 14px var(--gutter) 0; display: grid; grid-template-columns: minmax(0, 320px) minmax(0, 1fr) minmax(0, 320px); grid-template-rows: repeat(3, auto); row-gap: 14px; align-content: center; }
+  .lcard { position: relative; z-index: 1; padding: 15px 16px; will-change: transform, opacity; align-self: center; }
+  .links { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: 0; }
+  .lk { fill: none; stroke: var(--primary); stroke-width: 2.5; stroke-linecap: round; opacity: .38; stroke-dasharray: 1; stroke-dashoffset: 1; }
+  .lk-flow { fill: none; stroke: var(--primary); stroke-width: 3.5; stroke-linecap: round; stroke-dasharray: .07 .93; opacity: 0; }
+  .links.live .lk-flow { opacity: .9; animation: flow 3.2s linear infinite; animation-delay: var(--fd, 0s); }
+  @keyframes flow { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+  .lk-dot { fill: var(--primary); opacity: 0; }
   .lc-hd { display: flex; align-items: center; gap: 10px; }
   .lc-hd .tile { width: 36px; height: 36px; border-radius: 11px; }
   .lc-hd .tile svg { width: 18px; height: 18px; }
@@ -332,8 +341,8 @@
   .lcard .v small { font-size: 14px; color: var(--fg-2); font-weight: 700; margin-right: 2px; }
   .lcard .s { font-size: 13px; color: var(--fg-2); font-weight: 700; margin-top: 4px; }
   .lcard .s b { color: var(--fg); }
-  .l1 { left: 1%; top: 2%; width: 290px; } .l2 { left: 9%; top: 36%; width: 270px; } .l3 { left: 2%; top: 68%; width: 280px; }
-  .l4 { right: 1%; top: 1%; width: 300px; } .l5 { right: 8%; top: 36%; width: 270px; } .l6 { right: 2%; top: 66%; width: 290px; }
+  .l1 { grid-column: 1; grid-row: 1; } .l2 { grid-column: 1; grid-row: 2; } .l3 { grid-column: 1; grid-row: 3; }
+  .l4 { grid-column: 3; grid-row: 1; } .l5 { grid-column: 3; grid-row: 2; } .l6 { grid-column: 3; grid-row: 3; }
   .rows { display: grid; gap: 8px; margin-top: 12px; }
   .row { display: grid; grid-template-columns: 42px 1fr auto; gap: 8px; align-items: center; font-size: 13.5px; font-weight: 800; }
   .row .t { color: var(--primary); }
@@ -351,12 +360,12 @@
   .svc { display: grid; gap: 7px; margin-top: 12px; font-size: 13.5px; font-weight: 800; }
   .svc div { display: grid; grid-template-columns: 1fr auto auto; gap: 12px; }
   .svc em { font-style: normal; color: var(--fg-2); font-weight: 700; }
-  .center-tile { position: absolute; left: 50%; top: 45%; width: 290px; margin: -120px 0 0 -145px; padding: 22px 22px 30px; overflow: hidden; text-align: center; display: grid; justify-items: center; gap: 12px; }
-  .center-tile .logo-tile { width: 92px; height: 92px; border-radius: 26px; box-shadow: 0 6px 0 var(--primary-shadow); }
-  .center-tile .logo-tile svg { width: 56px; height: 56px; }
-  .center-tile b { font-size: 26px; font-weight: 900; letter-spacing: -.02em; }
-  .center-tile .stripe-soft { position: absolute; left: 0; right: 0; bottom: 0; height: 9px; }
-  .center-note { position: absolute; left: 50%; bottom: 3%; width: 380px; margin-left: -190px; padding: 15px 16px; display: flex; gap: 12px; align-items: flex-start; border-color: var(--next-border); background: var(--next-bg); box-shadow: 0 5px 0 rgba(0,151,245,.3); }
+  .center-logo { position: relative; z-index: 2; grid-column: 2; grid-row: 2; place-self: center; display: grid; justify-items: center; gap: 12px; text-align: center; }
+  .center-logo::before { content: ''; position: absolute; left: 50%; top: 46px; width: 300px; height: 300px; margin: -150px 0 0 -150px; border-radius: 50%; background: radial-gradient(circle, var(--primary-soft), transparent 66%); z-index: -1; }
+  .center-logo .logo-tile { width: 96px; height: 96px; border-radius: 28px; box-shadow: 0 6px 0 var(--primary-shadow); }
+  .center-logo .logo-tile svg { width: 58px; height: 58px; }
+  .center-logo b { font-size: 30px; font-weight: 900; letter-spacing: -.02em; }
+  .center-note { grid-column: 2; grid-row: 3; justify-self: center; align-self: end; width: min(100%, 380px); padding: 15px 16px; display: flex; gap: 12px; align-items: flex-start; border-color: var(--next-border); background: var(--next-bg); box-shadow: 0 5px 0 rgba(0,151,245,.3); }
   .center-note p { font-size: 14.5px; font-weight: 700; line-height: 1.45; }
   .center-note p b { display: block; font-weight: 900; font-size: 15px; }
 
@@ -545,10 +554,12 @@
     .living { height: auto; padding-block: 90px 60px; }
     .living-pin { position: static; height: auto; min-height: 0; padding-top: 0; }
     .living-stage { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 40px var(--gutter) 0; }
-    .lcard, .center-note { position: static; margin-left: 0; width: auto !important; transform: none !important; opacity: 1 !important; }
+    .living-stage { zoom: 1 !important; }
+    .lcard, .center-note { position: static; margin-left: 0; width: auto !important; transform: none !important; opacity: 1 !important; grid-column: auto; grid-row: auto; align-self: stretch; }
+    .links { display: none; }
     .l2, .l5 { display: block; }
-    .center-tile { display: none; }
-    .center-note { grid-column: 1 / -1; order: -1; }
+    .center-logo { display: none; }
+    .center-note { grid-column: 1 / -1; grid-row: auto; order: -1; width: auto; justify-self: stretch; }
     .toast { right: 10px; }
   }
   @media (max-width: 640px) {
@@ -565,6 +576,7 @@
     .toast { position: relative; inset: auto; width: auto; margin-top: 16px; }
   }
   @media (max-width: 400px) { .stage { --k: .56; } }
+  @media (prefers-reduced-motion: reduce) { .links.live .lk-flow { animation: none; opacity: 0; } }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition-duration: .01ms !important; transition-delay: 0s !important; }
     html { scroll-behavior: auto; }
@@ -745,6 +757,7 @@
   <div class="living-pin">
     <h2 class="h2 living-title wrap" id="living-title" data-reveal>Abre a agenda do dia e <span class="blue">vê tudo numa tela só.</span></h2>
     <div class="living-stage" id="livingStage">
+      <svg class="links" id="links" aria-hidden="true"></svg>
       <div class="lcard toon l1">
         <div class="lc-hd"><span class="tile g"><svg><use href="#i-dollar"/></svg></span><span class="label">Faturamento</span></div>
         <div class="v tn"><small>R$</small>1.550,00</div>
@@ -786,11 +799,9 @@
           <div>Barba<em>20 min</em><span class="money tn">R$ 25</span></div>
         </div>
       </div>
-      <div class="center-tile toon" id="centerTile" aria-hidden="true">
+      <div class="center-logo" id="centerTile" aria-hidden="true">
         <span class="logo-tile"><svg><use href="#i-scissors"/></svg></span>
         <b>Bbrflow</b>
-        <span class="pill b"><svg><use href="#i-scissors"/></svg>Barbearia</span>
-        <span class="stripe-soft"></span>
       </div>
       <div class="center-note lcard toon">
         <span class="tile g"><svg><use href="#i-whats"/></svg></span>
@@ -1070,17 +1081,47 @@
     if (next !== zone) { zone = next; setState(next); }
   };
 
-  /* tela única: cards se juntam no scroll */
+  /* tela única: cards se juntam no scroll; linhas ligam o logo a cada card */
   const living = document.getElementById('living');
+  const stageEl = document.getElementById('livingStage');
   const cards = [...document.querySelectorAll('#livingStage .lcard')];
   const tile = document.getElementById('centerTile');
+  const logoTile = tile.querySelector('.logo-tile');
+  const links = document.getElementById('links');
+  const NS = 'http://www.w3.org/2000/svg';
+  let lines = [];
+  const rel = (el) => { let x = 0, y = 0; for (let e = el; e && e !== stageEl; e = e.offsetParent) { x += e.offsetLeft; y += e.offsetTop; } return { x, y, w: el.offsetWidth, h: el.offsetHeight }; };
+  const mk = (tag, attrs) => { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); return n; };
+  const buildLinks = () => {
+    links.replaceChildren(); lines = [];
+    if (!desk.matches) return;
+    const L = rel(logoTile), T = rel(tile);
+    const cx = L.x + L.w / 2, cy = L.y + L.h / 2;
+    cards.forEach((c, i) => {
+      const r = rel(c);
+      const below = r.y > T.y + T.h && Math.abs(r.x + r.w / 2 - cx) < 40;
+      let x0 = cx, y0 = cy, x1, y1, d;
+      if (below) { y0 = T.y + T.h + 6; x1 = r.x + r.w / 2; y1 = r.y; d = `M${x0} ${y0} L${x1} ${y1}`; }
+      else { x1 = r.x + r.w / 2 < cx ? r.x + r.w : r.x; y1 = r.y + r.h / 2; const xm = (x0 + x1) / 2; d = `M${x0} ${y0} C${xm} ${y0} ${xm} ${y1} ${x1} ${y1}`; }
+      const base = mk('path', { d, class: 'lk', pathLength: 1 });
+      const flow = mk('path', { d, class: 'lk-flow', pathLength: 1 });
+      flow.style.setProperty('--fd', (-(i * .5)).toFixed(2) + 's');
+      const dot = mk('circle', { cx: x1, cy: y1, r: 5, class: 'lk-dot' });
+      links.append(base, flow, dot);
+      lines.push({ base, dot });
+    });
+  };
   const back = (t) => { const c1 = 1.4, c3 = c1 + 1; return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2); };
+  const setLines = (vals) => lines.forEach((l, i) => { const v = vals(i); l.base.style.strokeDashoffset = String(1 - v); l.dot.style.opacity = v > .98 ? '1' : '0'; });
   const assemble = () => {
-    if (!desk.matches || reduce) { cards.forEach((c) => { c.style.transform = c.style.opacity = ''; }); tile.style.transform = ''; return; }
+    if (!desk.matches || reduce) {
+      cards.forEach((c) => { c.style.transform = c.style.opacity = ''; }); tile.style.transform = '';
+      setLines(() => 1); links.classList.toggle('live', desk.matches && !reduce); return;
+    }
     const r = living.getBoundingClientRect();
     const p = clamp(-r.top / ((living.offsetHeight - innerHeight) * .7));
-    const sr = document.getElementById('livingStage').getBoundingClientRect();
-    const mx = sr.left + sr.width / 2, my = sr.top + sr.height * .45;
+    const lr = logoTile.getBoundingClientRect();
+    const mx = lr.left + lr.width / 2, my = lr.top + lr.height / 2;
     cards.forEach((c, i) => {
       const t = clamp((p - i * .07) / .42), e = back(t);
       const b = c.getBoundingClientRect();
@@ -1092,10 +1133,14 @@
     });
     const s = back(clamp(p * 1.6));
     tile.style.transform = `scale(${(.7 + .3 * s).toFixed(3)}) rotate(${((1 - s) * -8).toFixed(2)}deg)`;
+    setLines((i) => clamp((p - i * .07 - .16) / .3));
+    links.classList.toggle('live', p > .85);
   };
-  const resetOrigins = () => cards.forEach((c) => { c.style.transform = 'none'; delete c._ox; delete c._oy; });
-  addEventListener('resize', () => { resetOrigins(); requestAnimationFrame(assemble); });
-  resetOrigins(); assemble();
+  const resetOrigins = () => { cards.forEach((c) => { c.style.transform = 'none'; delete c._ox; delete c._oy; }); tile.style.transform = 'none'; };
+  const relayout = () => { resetOrigins(); buildLinks(); requestAnimationFrame(assemble); };
+  addEventListener('resize', relayout);
+  document.fonts?.ready.then(relayout);
+  relayout();
   let ticking = false;
   addEventListener('scroll', () => { if (ticking) return; ticking = true; requestAnimationFrame(() => { assemble(); heroScroll(); ticking = false; }); }, { passive: true });
 
